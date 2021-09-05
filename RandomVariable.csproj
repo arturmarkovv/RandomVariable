@@ -7,12 +7,10 @@
 
     <ItemGroup>
       <Compile Remove="MathParser.cs" />
-      <Compile Remove="MathParserException.cs" />
     </ItemGroup>
 
     <ItemGroup>
       <None Include="MathParser.cs" />
-      <None Include="MathParserException.cs" />
     </ItemGroup>
 
 </Project>
