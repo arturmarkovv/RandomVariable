@@ -33,7 +33,7 @@ namespace RandomVariable
         public RandomVariableStatistic CalculateStatistic(string expression, params StatisticKind[] statisticForCalculate) 
         
         {
-            var tokens = ExpressionParser.Parse(expression,Operators);
+            var tokens = new ExpressionParser(Operators).Parse(expression);
             throw new NotImplementedException();
         }
         private void GetRandomVariables(List<string> tokens)

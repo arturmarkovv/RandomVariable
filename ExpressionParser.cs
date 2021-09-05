@@ -7,9 +7,15 @@ using System.Text.RegularExpressions;
 
 namespace RandomVariable
 {
-    public static class ExpressionParser
+    public class ExpressionParser
     {
-        public static List<string> Parse(string mathExpression, Dictionary<string, Func<double, double, double>> operators)
+        private readonly Dictionary<string, Func<double, double, double>> Operators;
+
+        public ExpressionParser(Dictionary<string, Func<double, double, double>> operators)
+        {
+            Operators = operators;
+        }
+        public List<string> Parse(string mathExpression)
         {
             var tempToken = "";
             var tokens = new List<string>();
@@ -31,7 +37,7 @@ namespace RandomVariable
                 {
                     tempToken += ch;
 
-                    while (i + 1 < mathExpression.Length && (char.IsDigit(mathExpression[i + 1]) || mathExpression[i + 1] == '.' || mathExpression[i + 1] == 'd'))
+                    while (i + 1 < mathExpression.Length && (IsDotOrDigit(mathExpression, i + 1) || mathExpression[i + 1] == 'd'))
                     {
                         tempToken += mathExpression[++i];
                     }
@@ -42,11 +48,11 @@ namespace RandomVariable
                     continue;
                 }
 
-                if (IsUnaryOperator(mathExpression, operators, i, ch, tokens))
+                if (IsUnaryOperator(mathExpression, i, ch, tokens))
                 {
                     tempToken += ch;
 
-                    while (i + 1 < mathExpression.Length && (char.IsDigit(mathExpression[i + 1]) || mathExpression[i + 1] == '.'))
+                    while (i + 1 < mathExpression.Length && IsDotOrDigit(mathExpression, i+1))
                     {
                         tempToken += mathExpression[++i];
                     }
@@ -59,7 +65,7 @@ namespace RandomVariable
 
                 if (ch == '(')
                 {
-                    if (i != 0 && (char.IsDigit(mathExpression[i - 1]) || char.IsDigit(mathExpression[i - 1]) || mathExpression[i - 1] == ')'))
+                    if (i != 0 && (char.IsDigit(mathExpression[i - 1]) || mathExpression[i - 1] == ')'))
                     {
                         tokens.Add("*");
                         tokens.Add("(");
@@ -78,12 +84,17 @@ namespace RandomVariable
             return tokens;
         }
 
-        private static bool IsUnaryOperator(string mathExpression, Dictionary<string, Func<double, double, double>> operators, int i, char ch, List<string> tokens)
+        private static bool IsDotOrDigit(string mathExpression, int i)
+        {
+            return char.IsDigit(mathExpression[i]) || mathExpression[i] == '.';
+        }
+
+        private bool IsUnaryOperator(string mathExpression, int i, char ch, List<string> tokens)
         {
             return i + 1 < mathExpression.Length &&
                    (ch == '-' || ch == '+') &&
                    char.IsDigit(mathExpression[i + 1]) &&
-                   (i == 0 || (tokens.Count > 0 && operators.ContainsKey(tokens.Last())) || i - 1 > 0 && mathExpression[i - 1] == '(');
+                   (i == 0 || (tokens.Count > 0 && Operators.ContainsKey(tokens.Last())) || i - 1 > 0 && mathExpression[i - 1] == '(');
         }
     }
 }
