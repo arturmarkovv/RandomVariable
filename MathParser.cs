@@ -50,7 +50,7 @@ namespace RandomVariable
         /// The culture information to use when parsing expressions.
         /// </summary>
         [Obsolete]
-        public CultureInfo CultureInfo { get; set; }
+        public CultureInfo CultureInfo { get; set; } = CultureInfo.InvariantCulture;
 
         /// <summary>
         /// A random number generator that may be used by functions and operators.
@@ -70,12 +70,10 @@ namespace RandomVariable
         /// <param name="loadPreDefinedFunctions">If true, the parser will be initialized with the functions abs, sqrt, pow, root, rem, sign, exp, floor, ceil, round, truncate, log, ln, random, and trigonometric functions.</param>
         /// <param name="loadPreDefinedOperators">If true, the parser will be initialized with the operators ^, %, :, /, *, -, +, >, &lt;, &#8805;, &#8804;, &#8800;, and =.</param>
         /// <param name="loadPreDefinedVariables">If true, the parser will be initialized with the variables pi, tao, e, phi, major, minor, pitograd, and piofgrad.</param>
-        /// <param name="cultureInfo">The culture information to use when parsing expressions. If null, the parser will use the invariant culture.</param>
         public MathParser(
             bool loadPreDefinedFunctions = true,
             bool loadPreDefinedOperators = true,
-            bool loadPreDefinedVariables = true,
-            CultureInfo cultureInfo = null)
+            bool loadPreDefinedVariables = true)
         {
             if (loadPreDefinedOperators)
             {
@@ -212,8 +210,6 @@ namespace RandomVariable
             {
                 LocalVariables = new Dictionary<string, double>();
             }
-
-            CultureInfo = cultureInfo ?? CultureInfo.InvariantCulture;
         }
 
         /// <summary>
