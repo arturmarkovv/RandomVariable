@@ -8,7 +8,8 @@ namespace RandomVariable
 {
     public class RandomVariableStatisticCalculator : IRandomVariableStatisticCalculator
     {
-        public Dictionary<string,(double,double,double[])> RandomVariables { get; set; }
+        public Dictionary<int,ExtendedRandomVariable> RandomVariables => null;
+
         public Dictionary<string, Func<double, double, double>> Operators { get; set; }
         public RandomVariableStatisticCalculator()
         {
@@ -30,16 +31,20 @@ namespace RandomVariable
             };
         }
 
-        public RandomVariableStatistic CalculateStatistic(string expression, params StatisticKind[] statisticForCalculate) 
-        
+        public RandomVariableStatistic CalculateStatistic(string expression, params StatisticKind[] statisticForCalculate)
         {
             var tokens = new ExpressionParser(Operators).Parse(expression);
+            GetRandomVariables(tokens);
             throw new NotImplementedException();
         }
         private void GetRandomVariables(List<string> tokens)
         {
-            //tokens.Where(el => Regex.IsMatch(el, @"\d+d\d+")).Select(x => RandomVariables[x] = )
+            tokens
+                .Where(token => Regex.IsMatch(token, @"\d+d\d+"))
+                .ToList()
+                .ForEach(rv =>RandomVariables[tokens.IndexOf(rv)] = new ExtendedRandomVariable(rv));
         }
+        
 
         private double BasicArithmeticalExpression(List<string> tokens)
         {
