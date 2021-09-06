@@ -5,35 +5,37 @@ using System.Numerics;
 
 namespace RandomVariable
 {
-    public class ExtendedRandomVariable : RandomVariableStatistic
+    public class ExtendedRandomVariable
     {
         public string Value { get; }
         public double SidesCount { get; }
         public double DiceCount { get; }
 
-        public override double? ExpectedValue 
+        public double ExpectedValue 
             => _expectedValue.Value;
-        public override Dictionary<double, double> ProbabilityDistribution 
-            => _probabilityDistribution.Value;
-        public override double? Variance 
+        public double Variance
             => _variance.Value;
+        public Dictionary<double, double> ProbabilityDistribution 
+            => _probabilityDistribution.Value;
+        
 
-        private readonly Lazy<double?> _expectedValue;
+        private readonly Lazy<double> _expectedValue;
+        private readonly Lazy<double> _variance;
         private readonly Lazy<Dictionary<double, double>> _probabilityDistribution;
-        private readonly Lazy<double?> _variance;
+
         public ExtendedRandomVariable(string value)
         {
             Value = value;
             DiceCount = Convert.ToDouble(value.Split('d')[0]);
             SidesCount = Convert.ToDouble(value.Split('d')[1]);
 
-            _expectedValue = new Lazy<double?>(CalculateExpectedValue());
+            _expectedValue = new Lazy<double>(CalculateExpectedValue());
 
-            _variance = new Lazy<double?>(CalculateVariance());
+            _variance = new Lazy<double>(CalculateVariance());
 
             _probabilityDistribution = new Lazy<Dictionary<double, double>>(ProbabilityDistributionDensity(DiceCount, SidesCount));
         }
-
+        
         public double CalculateExpectedValue() => DiceCount * (SidesCount + 1) / 2;
 
         public double CalculateVariance()

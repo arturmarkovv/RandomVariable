@@ -8,11 +8,12 @@ namespace RandomVariable
 {
     public class RandomVariableStatisticCalculator : IRandomVariableStatisticCalculator
     {
-        public Dictionary<int,ExtendedRandomVariable> RandomVariables => null;
+        public Dictionary<int,ExtendedRandomVariable> RandomVariables;
 
         public Dictionary<string, Func<double, double, double>> Operators { get; set; }
         public RandomVariableStatisticCalculator()
         {
+            RandomVariables = new Dictionary<int, ExtendedRandomVariable>();
             Operators = new Dictionary<string, Func<double, double, double>>
             {
                 ["/"] = (a, b) =>
@@ -35,7 +36,28 @@ namespace RandomVariable
         {
             var tokens = new ExpressionParser(Operators).Parse(expression);
             GetRandomVariables(tokens);
-            throw new NotImplementedException();
+            var statistic = new RandomVariableStatistic();
+
+            if (statisticForCalculate.Contains(StatisticKind.ExpectedValue) && RandomVariables.Count != 0)
+            {
+                var tokensForCalculateExpectedValue = tokens.Select((t, i) => RandomVariables.ContainsKey(i)
+                        ? RandomVariables[i].ExpectedValue.ToString(CultureInfo.InvariantCulture)
+                        : tokens.ElementAt(i))
+                    .ToList();
+                statistic.ExpectedValue = CalculateExpectedValue(tokensForCalculateExpectedValue);
+            }
+            if(statisticForCalculate.Contains(StatisticKind.Variance))
+            {
+
+            }
+            if (statisticForCalculate.Contains(StatisticKind.ProbabilityDistribution))
+            {
+
+            }
+
+
+
+            return statistic;
         }
         private void GetRandomVariables(List<string> tokens)
         {
@@ -44,7 +66,33 @@ namespace RandomVariable
                 .ToList()
                 .ForEach(rv =>RandomVariables[tokens.IndexOf(rv)] = new ExtendedRandomVariable(rv));
         }
-        
+
+        private double CalculateExpectedValue(List<string> tokens)
+        {
+
+            while (tokens.IndexOf("(") != -1)
+            {
+                // getting data between "(" and ")"
+                var open = tokens.LastIndexOf("(");
+                var close = tokens.IndexOf(")", open); // in case open is -1, i.e. no "(" // , open == 0 ? 0 : open - 1
+
+                var roughExpr = new List<string>();
+
+                for (var i = open + 1; i < close; i++)
+                {
+                    roughExpr.Add(tokens[i]);
+                }
+
+                double tmpResult;
+
+                tmpResult = BasicArithmeticalExpression(roughExpr);
+
+                tokens[open] = tmpResult.ToString(CultureInfo.InvariantCulture);
+                tokens.RemoveRange(open + 1, close - open);
+
+            }
+            return BasicArithmeticalExpression(tokens);
+        }
 
         private double BasicArithmeticalExpression(List<string> tokens)
         {
