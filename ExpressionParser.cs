@@ -93,7 +93,10 @@ namespace RandomVariable
         {
             return i + 1 < mathExpression.Length &&
                    (ch == '-' || ch == '+') &&
-                   char.IsDigit(mathExpression[i + 1]) &&
+                   (char.IsDigit(mathExpression[i + 1]) &&
+                    ((i + 2 < mathExpression.Length && mathExpression[i + 2] != 'd') &&
+                     (i + 3 < mathExpression.Length && mathExpression[i + 3] != 'd') &&
+                     (i + 4 < mathExpression.Length && mathExpression[i + 4] != 'd'))) &&
                    (i == 0 || (tokens.Count > 0 && Operators.ContainsKey(tokens.Last())) || i - 1 > 0 && mathExpression[i - 1] == '(');
         }
     }

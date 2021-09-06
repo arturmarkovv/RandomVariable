@@ -9,8 +9,4 @@
       <Compile Remove="MathParser.cs" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Include="MathParser.cs" />
-    </ItemGroup>
-
 </Project>

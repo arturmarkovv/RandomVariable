@@ -38,10 +38,10 @@ namespace RandomVariable
             GetRandomVariables(tokens);
             var statistic = new RandomVariableStatistic();
 
-            if (statisticForCalculate.Contains(StatisticKind.ExpectedValue) && RandomVariables.Count != 0)
+            if (statisticForCalculate.Contains(StatisticKind.ExpectedValue))
             {
                 var tokensForCalculateExpectedValue = tokens.Select((t, i) => RandomVariables.ContainsKey(i)
-                        ? RandomVariables[i].ExpectedValue.ToString(CultureInfo.InvariantCulture)
+                        ? RandomVariables[i].CalculateExpectedValue().ToString(CultureInfo.InvariantCulture)
                         : tokens.ElementAt(i))
                     .ToList();
                 statistic.ExpectedValue = CalculateExpectedValue(tokensForCalculateExpectedValue);
@@ -61,10 +61,10 @@ namespace RandomVariable
         }
         private void GetRandomVariables(List<string> tokens)
         {
-            tokens
+            var temp1 = tokens
                 .Where(token => Regex.IsMatch(token, @"\d+d\d+"))
-                .ToList()
-                .ForEach(rv =>RandomVariables[tokens.IndexOf(rv)] = new ExtendedRandomVariable(rv));
+                .ToList();
+                temp1.ForEach(rv =>RandomVariables[tokens.IndexOf(rv)] = new ExtendedRandomVariable(rv));
         }
 
         private double CalculateExpectedValue(List<string> tokens)
@@ -72,9 +72,8 @@ namespace RandomVariable
 
             while (tokens.IndexOf("(") != -1)
             {
-                // getting data between "(" and ")"
                 var open = tokens.LastIndexOf("(");
-                var close = tokens.IndexOf(")", open); // in case open is -1, i.e. no "(" // , open == 0 ? 0 : open - 1
+                var close = tokens.IndexOf(")", open); 
 
                 var roughExpr = new List<string>();
 
