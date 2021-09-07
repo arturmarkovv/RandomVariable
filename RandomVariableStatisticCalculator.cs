@@ -61,10 +61,15 @@ namespace RandomVariable
         }
         private void GetRandomVariables(List<string> tokens)
         {
-            var temp1 = tokens
-                .Where(token => Regex.IsMatch(token, @"\d+d\d+"))
-                .ToList();
-                temp1.ForEach(rv =>RandomVariables[tokens.IndexOf(rv)] = new ExtendedRandomVariable(rv));
+            for (int i = 0; i < tokens.Count; i++)
+            {
+                if (Regex.IsMatch(tokens[i], @"\d+d\d+"))
+                {
+                    RandomVariables[i] = new ExtendedRandomVariable(tokens[i]);
+                }
+                
+            }
+            
         }
 
         private double CalculateExpectedValue(List<string> tokens)
